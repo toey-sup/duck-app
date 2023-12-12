@@ -1,103 +1,112 @@
-import { todoManagement } from '../lib/todoManagement.js'
-import { todoUserInterface } from '../UI/todoList.js'
-const { showTodoItem, showNumberOfDone, showNumberOfNotDone, removeTodoItem } =
-  todoUserInterface()
+import { foxManagement } from '../lib/foxManagement.js'
+import { foxInterface } from '../UI/Fox.js'
+import { Fox } from '../lib/fox.js'
+const { showFox, showLikedFoxCount, showUnlikeFoxCount, removeFox, showNewFox, updateFoxDescription } =
+foxInterface()
 const {
-  addTodo,
-  removeTodo,
-  findTodo,
-  getTodos,
-  getNumberOfDone,
-  getNumberOfNotDone,
-  setItemToDone,
-  loadTodos,
-  clearTodo
-} = todoManagement()
+  addLikedFox,
+  unlikeFox,
+  getLikedFoxs,
+  getNumberOfLikedFoxs,
+  getNumberOfUnlikedFoxs,
+  setFoxDescription,
+  unlikeAllFoxs,
+  loadFoxTinderData,
+  randomFoxImage,
+  unlikeNewFoxs,
+} = foxManagement()
 
-const addTodoHandler = () => {
-  const todoItem = document.querySelector('input').value
-  if (todoItem.trim().length !== 0) {
-    const todoId = addTodo(undefined, todoItem, undefined)
-    showTodoItem(todoId, todoItem)
-    addButtonHandler(todoId)
-    showNumberOfDone(getNumberOfDone())
-    showNumberOfNotDone(getNumberOfNotDone())
-  }
-}
-const addButtonHandler = (todoId) => {
-  document
-    .getElementById(todoId)
-    .children[1].addEventListener('click', notDoneButtonHandler)
-  document
-    .getElementById(todoId)
-    .children[2].addEventListener('click', removeButtonHandler)
-  document.querySelector('input').value = ''
-}
-
-const notDoneButtonHandler = (event) => {
-  const doneButtonFire = event.target
-  setdoneStyle(doneButtonFire)
-  setItemToDone(doneButtonFire.parentElement.getAttribute('id'))
-  showNumberOfDone(getNumberOfDone())
-  showNumberOfNotDone(getNumberOfNotDone())
-}
-
-const setdoneStyle = (doneButtonFire) => {
-  doneButtonFire.textContent = 'Done'
-  doneButtonFire.style = 'background-color: green;color: white'
-}
-
-const removeButtonHandler = (event) => {
+const unlikeButtonHandler = (event) => {
   const removeButtonFire = event.target
   const removeId = removeButtonFire.parentElement.getAttribute('id')
-  removeTodoItem(removeId)
-  removeTodo(Number(removeId))
-  showNumberOfDone(getNumberOfDone())
-  showNumberOfNotDone(getNumberOfNotDone())
+  unlikeFox(Number(removeId))
+  removeFox(Number(removeId))
+  showUnlikeFoxCount(getNumberOfUnlikedFoxs())
+}
+
+const addDescriptionButtonHandler = (event) => {
+  const doneButtonFire = event.target
+  const foxId = doneButtonFire.parentElement.getAttribute('id')
+  const description =  prompt('Add Description')
+  if (description) {
+    setFoxDescription(foxId, description)
+    updateFoxDescription(foxId, description)
+  }
+}
+
+const addFoxButtonHandler = (foxId) => {
+  document
+    .getElementById(foxId)
+    .children[2].addEventListener('click', addDescriptionButtonHandler)
+  document
+    .getElementById(foxId)
+    .children[3].addEventListener('click', unlikeButtonHandler)
+}
+
+const showNewFoxHandler = async () => {
+  const image = await randomFoxImage()
+  showNewFox(image)
+}
+
+const likeNewFoxHandler = async () => {
+  const foxImage = document.getElementById('newFoxImage').src
+  await showNewFoxHandler();
+  if (foxImage !== '') {
+    const foxId = addLikedFox(undefined, '', foxImage)
+    const addedFox = getLikedFoxs().find((f) => f.id === foxId)
+    showFox(foxId, addedFox.description, addedFox.image)
+    addFoxButtonHandler(foxId)
+    showLikedFoxCount(getNumberOfLikedFoxs())
+  }
+}
+
+const unlikeNewFoxHandler = async () => {
+  await showNewFoxHandler();
+  unlikeNewFoxs()
+  showLikedFoxCount(getNumberOfLikedFoxs())
+  showUnlikeFoxCount(getNumberOfUnlikedFoxs())
 }
 
 const beforeUnloadHandler = (event) => {
   event.preventDefault()
-  localStorage.setItem('todos', JSON.stringify(getTodos()))
-  clearTodo()
+  localStorage.setItem('foxTinder', JSON.stringify({
+    likedFoxs: getLikedFoxs(),
+    unlikedFoxCount: getNumberOfUnlikedFoxs(),
+    runningId: Fox.runningId,
+  }))
 }
 
-const loadHandler = () => {
-  const localTodos = localStorage.getItem('todos')
-  const yourTodos = JSON.parse(localTodos)
+const clearHandler = () => {
+  const foxsDiv = document.getElementById('likedFoxs');
+  foxsDiv.replaceChildren()
+  unlikeAllFoxs()
+}
 
-  if (
-    yourTodos !== null &&
-    yourTodos !== undefined &&
-    yourTodos?.length !== 0
-  ) {
-    //[{"id":1,"description":"Shopping","done":true},{"id":2,"description":"Watch Movie","done":false},{"id":3,"description":"sleep","done":true}]
+const loadHandler = async () => {
+  const storedData = localStorage.getItem('foxTinder')
+  const foxTinderData  = JSON.parse(storedData)
+  await showNewFoxHandler()
 
-    loadTodos(yourTodos)
-    getTodos().forEach((todo) => {
-      showTodoItem(todo.id, todo.description)
-      addButtonHandler(todo.id)
-      if (todo.done) {
-        const doneButtonFire = document.getElementById(todo.id).children[1]
-        setdoneStyle(doneButtonFire)
-      }
+  if (foxTinderData) {
+    loadFoxTinderData(foxTinderData.runningId, foxTinderData.likedFoxs, foxTinderData.unlikedFoxCount)
+    getLikedFoxs().forEach((fox) => {
+      showFox(fox.id, fox.description, fox.image)
+      addFoxButtonHandler(fox.id)
     })
-    showNumberOfDone(getNumberOfDone())
-    showNumberOfNotDone(getNumberOfNotDone())
   }
-  const addButton = document.getElementById('addBtn')
-  addButton.addEventListener('click', () => addTodoHandler())
-
-  const inputTodo = document.querySelector('input')
-  inputTodo.addEventListener('keypress', (event) => {
-    if (event.key === 'Enter') addTodoHandler()
-  })
+  showLikedFoxCount(getNumberOfLikedFoxs())
+  showUnlikeFoxCount(getNumberOfUnlikedFoxs())
+  const likeNewFoxButton = document.getElementById('likeNewFoxButton');
+  const unlikeNewFoxButton = document.getElementById('unlikeNewFoxButton');
+  const clearButton = document.getElementById('clearFoxButton');
+  likeNewFoxButton.addEventListener('click', () => likeNewFoxHandler())
+  unlikeNewFoxButton.addEventListener('click', () => unlikeNewFoxHandler())
+  clearButton.addEventListener('click', () => clearHandler())
 }
 
 export {
-  addTodoHandler,
-  notDoneButtonHandler,
-  removeButtonHandler,
+  unlikeButtonHandler,
+  addDescriptionButtonHandler,
   beforeUnloadHandler,
   loadHandler
 }
