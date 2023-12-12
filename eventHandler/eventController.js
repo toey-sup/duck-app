@@ -82,6 +82,8 @@ const clearHandler = () => {
   const foxsDiv = document.getElementById('likedFoxs');
   foxsDiv.replaceChildren()
   unlikeAllFoxs()
+  showLikedFoxCount(getNumberOfLikedFoxs())
+  showUnlikeFoxCount(getNumberOfUnlikedFoxs())
 }
 
 const loadHandler = async () => {
