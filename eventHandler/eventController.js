@@ -12,7 +12,7 @@ const {
   setFoxDescription,
   unlikeAllFoxs,
   loadFoxTinderData,
-  randomFoxImage,
+  getRandomFoxImage,
   unlikeNewFoxs,
 } = foxManagement()
 
@@ -44,7 +44,7 @@ const addFoxButtonHandler = (foxId) => {
 }
 
 const showNewFoxHandler = async () => {
-  const image = await randomFoxImage()
+  const image = await getRandomFoxImage()
   showNewFox(image)
 }
 
