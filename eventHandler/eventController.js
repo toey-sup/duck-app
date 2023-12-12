@@ -1,7 +1,7 @@
 import { foxManagement } from '../lib/foxManagement.js'
 import { foxInterface } from '../UI/Fox.js'
 import { Fox } from '../lib/fox.js'
-const { showFox, showLikedFoxCount, showUnlikeFoxCount, removeFox, showNewFox, updateFoxDescription } =
+const { showFox, showLikedFoxCount, showUnlikeFoxCount, removeFox, showNewFox, updateFoxDescription, showLoadingState } =
 foxInterface()
 const {
   addLikedFox,
@@ -45,6 +45,7 @@ const addFoxButtonHandler = (foxId) => {
 }
 
 const showNewFoxHandler = async () => {
+  showLoadingState()
   const image = await getRandomFoxImage()
   showNewFox(image)
 }

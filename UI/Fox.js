@@ -1,10 +1,21 @@
 function foxInterface() {
+  function showLoadingState() {
+    const newFoxImage = document.getElementById('newFoxImage')
+    newFoxImage.src = 'https://i.gifer.com/ZZ5H.gif'
+    const likeNewFoxButton = document.getElementById('likeNewFoxButton')
+    likeNewFoxButton.disabled = true
+    const unlikeNewFoxButton = document.getElementById('unlikeNewFoxButton')
+    unlikeNewFoxButton.disabled = true
+  }
   function showNewFox(image) {
     const newFoxImage = document.getElementById('newFoxImage')
     newFoxImage.src = image
     newFoxImage.width = 200
     newFoxImage.height = 200
-
+    const likeNewFoxButton = document.getElementById('likeNewFoxButton')
+    likeNewFoxButton.disabled = false
+    const unlikeNewFoxButton = document.getElementById('unlikeNewFoxButton')
+    unlikeNewFoxButton.disabled = false
   }
 
   function showFox(id, description, image) {
@@ -59,6 +70,6 @@ function foxInterface() {
     const foxDescription = document.getElementById(foxId).children[1]
     foxDescription.textContent = description
   }
-  return { showFox, showLikedFoxCount, showUnlikeFoxCount, removeFox, showNewFox, updateFoxDescription }
+  return { showFox, showLikedFoxCount, showUnlikeFoxCount, removeFox, showNewFox, updateFoxDescription, showLoadingState }
 }
 export { foxInterface }
