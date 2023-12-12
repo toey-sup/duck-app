@@ -56,7 +56,7 @@ function foxInterface() {
   }
 
   function updateFoxDescription(foxId, description) {
-    const foxDescription = document.getElementById(foxId).children[2]
+    const foxDescription = document.getElementById(foxId).children[1]
     foxDescription.textContent = description
   }
   return { showFox, showLikedFoxCount, showUnlikeFoxCount, removeFox, showNewFox, updateFoxDescription }
