@@ -21,6 +21,7 @@ const unlikeButtonHandler = (event) => {
   const removeId = removeButtonFire.parentElement.getAttribute('id')
   unlikeFox(Number(removeId))
   removeFox(Number(removeId))
+  showLikedFoxCount(getNumberOfLikedFoxs())
   showUnlikeFoxCount(getNumberOfUnlikedFoxs())
 }
 
@@ -57,6 +58,7 @@ const likeNewFoxHandler = async () => {
     showFox(foxId, addedFox.description, addedFox.image)
     addFoxButtonHandler(foxId)
     showLikedFoxCount(getNumberOfLikedFoxs())
+    showUnlikeFoxCount(getNumberOfUnlikedFoxs())
   }
 }
 
